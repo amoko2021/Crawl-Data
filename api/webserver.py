@@ -59,7 +59,7 @@ async def wait_until_next_update():
 
     while True:
         now = datetime.now()
-        next_update_time = datetime.combine(now.date(), dt_time(20, 45))  # Cập nhật lúc 18h00
+        next_update_time = datetime.combine(now.date(), dt_time(18, 45))  # Cập nhật lúc 18h00
         
         if now >= next_update_time:  # Nếu đã qua 18h, chờ đến 18h ngày mai
             next_update_time += timedelta(days=1)
