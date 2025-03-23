@@ -108,13 +108,7 @@ app.router.add_get('/xsmb/get_results', get_results)
 
 # Khởi động background task khi server chạy
 async def on_startup(app):
-    app.loop.create_task(wait_until_next_update())
-
-app.on_startup.append(on_startup)
-
-# Khởi động background task khi server chạy
-async def on_startup(app):
-    app.loop.create_task(wait_until_next_update())
+    asyncio.create_task(wait_until_next_update())
 
 app.on_startup.append(on_startup)
 
