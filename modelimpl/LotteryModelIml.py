@@ -6,7 +6,7 @@ import asyncio
 
 class LotteryModelIml():   
     def __init__(self):
-        self.api_base_url = "http://127.0.0.1:8080/xsmb"
+        self.api_base_url = "https://crawl-data-1jhn.onrender.com/xsmb"
         # Lấy ngày từ API
         date_response = requests.get(f"{self.api_base_url}/get_date")
         self.date = date_response.json()     
