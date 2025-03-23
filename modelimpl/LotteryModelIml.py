@@ -3,10 +3,14 @@ import requests
 from model.Lottery import Lottery
 import aiohttp
 import asyncio
+from dotenv import load_dotenv
+import os
+
+load_dotenv()
 
 class LotteryModelIml():   
     def __init__(self):
-        self.api_base_url = "https://crawl-data-1jhn.onrender.com/xsmb"
+        self.api_base_url = os.getenv("URL")
         # Lấy ngày từ API
         date_response = requests.get(f"{self.api_base_url}/get_date")
         self.date = date_response.json()     
