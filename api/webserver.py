@@ -8,30 +8,6 @@ URL = "https://ketqua.me/xsmb-xo-so-mien-bac"
 HEADERS = {
      "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
 }
-from datetime import datetime, time as dt_time, timedelta
-
-# URL trang web cần lấy dữ liệu
-URL = "https://ketqua.me/xsmb-xo-so-mien-bac"
-HEADERS = {
-    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
-}
-
-# Biến toàn cục lưu kết quả mới nhất
-latest_data = {"date": "", "results": {}}
-last_updated_date = None  # Ngày cập nhật cuối cùng
-
-async def fetch_data():
-    """Hàm tải dữ liệu từ trang web"""
-    global latest_data, last_updated_date
-
-    async with ClientSession() as session:
-        try:
-            async with session.get(URL, headers=HEADERS) as response:
-                response.raise_for_status()
-                html = await response.text()
-                soup = BeautifulSoup(html, "html.parser")
-        except Exception as e:
-            print(f"❌ Lỗi khi fetch dữ liệu: {e}")
 
 # Biến toàn cục lưu kết quả mới nhất
 latest_data = {"date": "", "results": {}}
@@ -83,7 +59,7 @@ async def wait_until_next_update():
 
     while True:
         now = datetime.now()
-        next_update_time = datetime.combine(now.date(), dt_time(20, 37))  # Cập nhật lúc 18h00
+        next_update_time = datetime.combine(now.date(), dt_time(20, 45))  # Cập nhật lúc 18h00
         
         if now >= next_update_time:  # Nếu đã qua 18h, chờ đến 18h ngày mai
             next_update_time += timedelta(days=1)
@@ -113,4 +89,4 @@ async def on_startup(app):
 app.on_startup.append(on_startup)
 
 if __name__ == '__main__':
-    web.run_app(app, host='0.0.0.0')
+    web.run_app(app, host='0.0.0.0', port=10000)
