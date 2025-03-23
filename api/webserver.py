@@ -6,6 +6,8 @@ from datetime import datetime, time as dt_time, timedelta
 # URL trang web cần lấy dữ liệu
 URL = "https://ketqua.me/xsmb-xo-so-mien-bac"
 HEADERS = {
+     "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
+}
 from datetime import datetime, time as dt_time, timedelta
 
 # URL trang web cần lấy dữ liệu
@@ -28,6 +30,8 @@ async def fetch_data():
                 response.raise_for_status()
                 html = await response.text()
                 soup = BeautifulSoup(html, "html.parser")
+        except Exception as e:
+            print(f"❌ Lỗi khi fetch dữ liệu: {e}")
 
 # Biến toàn cục lưu kết quả mới nhất
 latest_data = {"date": "", "results": {}}
@@ -95,8 +99,6 @@ async def get_date(request):
     return web.json_response({"date": latest_data["date"]})
 
 async def get_results(request):
-    """API trả về kết quả xổ số"""
-    return web.json_response(latest_data["results"])
     """API trả về kết quả xổ số"""
     return web.json_response(latest_data["results"])
 
