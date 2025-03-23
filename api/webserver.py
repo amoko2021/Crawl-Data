@@ -71,4 +71,4 @@ app.router.add_get('/xsmb/get_date', get_date)
 app.router.add_get('/xsmb/get_results', get_results)
 
 if __name__ == '__main__':
-    web.run_app(app, host='127.0.0.1', port=8080)
+    web.run_app(app, host='0.0.0.0')
