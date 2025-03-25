@@ -93,10 +93,11 @@ app.router.add_get('/xsmb/get_results', get_results)
 
 # Khởi động background task khi server chạy
 async def on_startup(app):
+    print("🚀 Khởi động server, đang lấy dữ liệu ban đầu...")
+    await fetch_data()  # Lấy dữ liệu ngay khi server khởi động
     asyncio.create_task(wait_until_next_update())
 
 app.on_startup.append(on_startup)
-app.on_startup.append(fetch_data)
 
 if __name__ == '__main__':
     web.run_app(app, host='0.0.0.0', port=10000)
