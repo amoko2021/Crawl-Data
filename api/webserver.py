@@ -1,22 +1,33 @@
 from aiohttp import web, ClientSession
 import asyncio
+import json
 from bs4 import BeautifulSoup
 from datetime import datetime, time as dt_time, timedelta
+import aiofiles
 
 # URL trang web cần lấy dữ liệu
 URL = "https://ketqua.me/xsmb-xo-so-mien-bac"
 HEADERS = {
-     "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
+    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
 }
+RESULT_FILE = "result.json"  # File lưu trữ kết quả
 
-# Biến toàn cục lưu kết quả mới nhất
-latest_data = {"date": "", "results": {}}
-last_updated_date = None  # Ngày cập nhật cuối cùng
+async def load_latest_data():
+    """Đọc dữ liệu từ file result.json"""
+    try:
+        async with aiofiles.open(RESULT_FILE, mode='r', encoding='utf-8') as f:
+            content = await f.read()
+            return json.loads(content)
+    except (FileNotFoundError, json.JSONDecodeError):
+        return {"date": "", "results": {}}
+
+async def save_latest_data(data):
+    """Lưu dữ liệu vào file result.json"""
+    async with aiofiles.open(RESULT_FILE, mode='w', encoding='utf-8') as f:
+        await f.write(json.dumps(data, ensure_ascii=False, indent=4))
 
 async def fetch_data():
     """Hàm tải dữ liệu từ trang web"""
-    global latest_data, last_updated_date
-
     async with ClientSession() as session:
         try:
             async with session.get(URL, headers=HEADERS) as response:
@@ -44,24 +55,20 @@ async def fetch_data():
                         if cell_values and cell_values[0]:  # Bỏ qua hàng rỗng
                             results[cell_values[0]] = cell_values[1:]
 
-                # Cập nhật dữ liệu nếu có thay đổi
-                latest_data["date"] = date_text
-                latest_data["results"] = results
-                last_updated_date = datetime.now().date()  # Lưu ngày cập nhật
-
-                print(f"✅ Dữ liệu đã được cập nhật vào {last_updated_date}!")
+                # Cập nhật và lưu dữ liệu
+                latest_data = {"date": date_text, "results": results}
+                await save_latest_data(latest_data)
+                print(f"✅ Dữ liệu đã được cập nhật vào {datetime.now()}!")
         except Exception as e:
             print(f"❌ Lỗi khi fetch dữ liệu: {e}")
 
 async def wait_until_next_update():
-    """Chờ đến 18h00 mỗi ngày để cập nhật dữ liệu"""
-    global last_updated_date
-
+    """Chờ đến 18h45 mỗi ngày để cập nhật dữ liệu"""
     while True:
         now = datetime.now()
-        next_update_time = datetime.combine(now.date(), dt_time(18, 45))  # Cập nhật lúc 18h00
+        next_update_time = datetime.combine(now.date(), dt_time(18, 45))  # Cập nhật lúc 18h45
         
-        if now >= next_update_time:  # Nếu đã qua 18h, chờ đến 18h ngày mai
+        if now >= next_update_time:  # Nếu đã qua 18h45, chờ đến 18h45 ngày mai
             next_update_time += timedelta(days=1)
 
         sleep_seconds = (next_update_time - now).total_seconds()
@@ -72,10 +79,12 @@ async def wait_until_next_update():
 
 async def get_date(request):
     """API trả về ngày xổ số"""
+    latest_data = await load_latest_data()
     return web.json_response({"date": latest_data["date"]})
 
 async def get_results(request):
     """API trả về kết quả xổ số"""
+    latest_data = await load_latest_data()
     return web.json_response(latest_data["results"])
 
 app = web.Application()
