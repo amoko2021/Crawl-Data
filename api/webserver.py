@@ -41,7 +41,7 @@ async def fetch_data():
                 if date_div:
                     date_links = date_div.find_all("a")
                     if len(date_links) > 2:
-                        date_text = date_links[2].text.strip()
+                        date_text = date_links[2].text.strip().split(" ")[1].replace("{", "")
 
                 # Lấy kết quả xổ số
                 result_table = soup.find("table", id="table-22")
