@@ -96,6 +96,7 @@ async def on_startup(app):
     asyncio.create_task(wait_until_next_update())
 
 app.on_startup.append(on_startup)
+app.on_startup.append(fetch_data)
 
 if __name__ == '__main__':
     web.run_app(app, host='0.0.0.0', port=10000)
